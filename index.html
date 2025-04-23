@@ -1,42 +1,113 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>ربات استاد هانیا</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ربات هوش مصنوعی صنایع چوبی هانیا</title>
+  <style>
+    body {
+      font-family: Tahoma, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 2rem;
+      direction: rtl;
+    }
+    .chatbox {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #444;
+      margin-bottom: 1rem;
+    }
+    #chat {
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      background: #fefefe;
+    }
+    .msg { margin-bottom: 0.5rem; }
+    .user { color: #005f99; }
+    .bot { color: #2a8b2a; }
+    input[type="text"] {
+      width: calc(100% - 90px);
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      border: none;
+      background: #2a8b2a;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .footer {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      text-align: center;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="chatbox">
+    <h2>ربات هوش مصنوعی صنایع چوبی هانیا</h2>
+    <div id="chat"></div>
+    <div>
+      <input type="text" id="input" placeholder="پیام خود را بنویسید..." />
+      <button onclick="send()">ارسال</button>
+    </div>
+    <div class="footer">خرید مستقیم از تولیدکننده | 09057864487</div>
+  </div>
+
   <script type="module">
-    import Puter from "https://esm.sh/puter-js";
+    import Puter from "https://cdn.jsdelivr.net/npm/puter-js@latest";
 
     const ai = new Puter();
+    const chat = document.getElementById("chat");
 
-    async function askBot(message) {
+    async function send() {
+      const input = document.getElementById("input");
+      const userMsg = input.value.trim();
+      if (!userMsg) return;
+
+      chat.innerHTML += `<div class="msg user">شما: ${userMsg}</div>`;
+      input.value = "";
+
       const stream = await ai.chat({
         messages: [
           {
             role: "system",
-            content: "تو دستیار برند استاد هانیا هستی. با لحن آرام، محترمانه، مشاورانه و سبک خسرو شکیبایی جواب می‌دی. فقط درباره نجاری، دکوراسیون چوبی و محصولات سفارشی چوبی صحبت کن.",
+            content: `شما یک ربات فروشنده صنایع چوبی برند استاد هانیا هستی. مشاوره حرفه‌ای، معرفی محصولات مثل میز، جلو مبلی، کنسول، کابینت، درب چوبی و... بده و همیشه محترمانه و صمیمی صحبت کن.`
           },
           {
             role: "user",
-            content: message,
+            content: userMsg
           }
-        ],
-        stream: true,
+        ]
       });
 
-      let fullMessage = "";
+      let reply = "";
       for await (const chunk of stream) {
-        fullMessage += chunk;
-        document.getElementById("response").innerText = fullMessage;
+        reply += chunk;
+        document.getElementById("input").disabled = true;
+        document.querySelector("button").disabled = true;
       }
-    }
 
-    window.askBot = askBot;
+      chat.innerHTML += `<div class="msg bot">ربات هانیا: ${reply}</div>`;
+      document.getElementById("input").disabled = false;
+      document.querySelector("button").disabled = false;
+      chat.scrollTop = chat.scrollHeight;
+    }
   </script>
-</head>
-<body style="font-family: sans-serif; text-align: center; padding: 50px; direction: rtl;">
-  <h2>ربات استاد هانیا</h2>
-  <input id="msg" placeholder="پیام خود را وارد کنید..." style="width: 300px; padding: 10px;" />
-  <button onclick="askBot(document.getElementById('msg').value)" style="padding: 10px 20px;">بپرس</button>
-  <pre id="response" style="margin-top: 20px; text-align: right; white-space: pre-wrap;"></pre>
 </body>
 </html>
